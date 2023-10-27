@@ -9,11 +9,11 @@
     {% endif %}
 
     <ul>
-        <li><a href="">None Category</a></li>
-
+        
         {% for category in categories %}
-            <li><a href="">{{ category.name }}</a></li>
+            <li><a href="{% url 'single_category' category.id  %}">{{ category.name }}</a></li>
         {% endfor %}
+        <li><a href="{% url 'no_category' %}">No Category</a></li>
     </ul>
 
 {% endblock %}
