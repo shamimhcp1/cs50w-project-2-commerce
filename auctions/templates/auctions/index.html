@@ -4,15 +4,26 @@
     
 
         <h2>Active Listings
+          
+            {% if my_name %}
+              by: <span class="badge badge-secondary">Me</span>
+            {% endif %}
+            {% if seller %}
+              by: <span class="badge badge-secondary">{{ seller.username }}</span>
+            {% endif %}
             {% if category %}
-            <span class="badge badge-secondary">{{ category.name }}</span>
+              by: <span class="badge badge-secondary">{{ category.name }}</span>
             {% endif %}
         </h2>
         {% for listing in listings %}
             <div class="card mb-3 m-2" style="max-width: 540px;">
                 <div class="row no-gutters">
                   <div class="col-md-4">
-                    <img src="{{ listing.image_url }}" class="card-img" alt="...">
+                    {% if listing.image_url %}
+                    <img class="card-img" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+                    {% else %}
+                    <img class="card-img" src="https://thumb.ac-illust.com/73/7387030e5a5600726e5309496353969a_t.jpeg" alt="{{ listing.title }}">
+                    {% endif %}
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">

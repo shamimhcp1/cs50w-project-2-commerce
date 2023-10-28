@@ -12,8 +12,12 @@ urlpatterns = [
     path("register", views.register, name="register"),
 
     # listing
+    
     path("create_listing", views.create_listing, name="create_listing"),
     path("listings/<int:listing_id>", views.single_listing, name="single_listing"),
+    path("seller/<int:seller_id>", views.listing_by_seller, name="listing_by_seller"),
+    path("my_listing", views.my_listing, name="my_listing"),
+    path("edit_listing/<int:listing_id>", views.edit_listing, name="edit_listing"),
 
     # category
     path("categories", views.categories, name="categories"),
