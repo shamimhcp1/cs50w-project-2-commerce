@@ -21,7 +21,11 @@
         {% endif %}
       </p>
       {% else %}
-      <p><a href="#" class="btn btn-info btn-sm">Watchlist</a></p>
+        {% if listing in request.user.watchlist.all %}
+            <p><a href="{% url 'watchlist' listing.id %}" class="btn btn-danger btn-sm">Remove from Watchlist</a></p>
+        {% else %}
+            <p><a href="{% url 'watchlist' listing.id %}" class="btn btn-info btn-sm">Add to Watchlist</a></p>
+        {% endif %}
       {% endif %}
     {% endif %}
     <div class="card">

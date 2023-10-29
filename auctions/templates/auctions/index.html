@@ -14,6 +14,9 @@
             {% if category %}
               by: <span class="badge badge-secondary">{{ category.name }}</span>
             {% endif %}
+            {% if watchlist_items %}
+              <span class="badge badge-secondary">{{ watchlist_items }}</span>
+            {% endif %}
         </h2>
         {% for listing in listings %}
             <div class="card mb-3 m-2" style="max-width: 540px;">

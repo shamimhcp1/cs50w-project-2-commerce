@@ -211,3 +211,25 @@ def no_category(request):
     return render(request, "auctions/index.html", {
         "listings" : listings
     })
+    
+# Watchlist add or remove
+@login_required(login_url='login')
+def watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user = User.objects.get(pk=request.user.id)
+    
+    if user in listing.watchers.all():
+        listing.watchers.remove(user) # remove a listing from the watchlist if it already exists
+        messages.warning(request, "Warning! Listing removed from watchlist.")
+    else:
+        listing.watchers.add(user) # add a listing to the watchlist not exists
+        messages.success(request, f"Success! Listing added to watchlist.")
+    
+    return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
+
+def watchlist_show(request):
+    listings = request.user.watchlist.all()
+    return render(request, "auctions/index.html", {
+        "listings" : listings,
+        "watchlist_items" : "Watchlist Items"
+    })

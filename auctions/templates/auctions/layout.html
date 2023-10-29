@@ -29,7 +29,9 @@
                     <a class="nav-link" href="{% url 'my_listing' %}">My Listings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Watchlist <span class="badge badge-secondary">1</span></a>
+                    <a class="nav-link" href="{% url 'watchlist_show' %}">Watchlist 
+                        {% if request.user.watchlist.all.count %}<span class="badge badge-secondary">{{ request.user.watchlist.all.count }}</span>{% endif %}
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
