@@ -122,9 +122,8 @@ def edit_listing(request, listing_id):
 # Single Listing
 def single_listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
-    seller = User.objects.get(pk=listing.seller_id)
     # Count total bid
-    bids = Bid.objects.filter(listing_id=listing_id)
+    bids = Bid.objects.filter(listing_id=listing_id).order_by('-bid_amount')
     bids_count = len(bids)
     
     category = ""
@@ -161,9 +160,9 @@ def single_listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "listing" : listing,
         "category" : category,
-        "seller" : seller,
         "bids_count" : bids_count,
-        "messages" : messages_to_display
+        "messages" : messages_to_display,
+        "bids" : bids
     })
 
 # listing by seller/user
@@ -193,7 +192,7 @@ def categories(request):
         for list in listings:
             if cat.id == list.category_id:
                 categories.add(cat)
-
+    
     return render(request, "auctions/categories.html", {
         "categories" : categories,
         "listings" : listings

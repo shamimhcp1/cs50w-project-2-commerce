@@ -13,8 +13,12 @@
     {% if user.is_authenticated %}
       {% if listing.seller_id == user.id %}
       <p>
+        {% if listing.is_closed == 0 %}
         <a href="{% url 'edit_listing' listing.id %}" class="btn btn-primary btn-sm">Edit Listing</a>
         <a href="#" class="btn btn-danger btn-sm">Close</a>
+        {% else %}
+        <span>Listing closed. </span>
+        {% endif %}
       </p>
       {% else %}
       <p><a href="#" class="btn btn-info btn-sm">Watchlist</a></p>
@@ -32,11 +36,11 @@
           <!-- Show this bid form if listing is not created by the loged in user -->
           {% if user.is_authenticated and listing.seller_id != user.id %}
           
-          {% if bids_count %}
+            {% if bids_count %}
             <p> {{ bids_count }} bid(s) so far, your bid is the current bid.</p>
-          {% else %}
+              {% else %}
             <p> No bid so far, your bid is the current bid.</p>
-          {% endif %}
+            {% endif %}
           
           <form action="" method="post">
             {% csrf_token%}
@@ -45,10 +49,21 @@
             </div>
             <input class="btn btn-primary" type="submit" value="Place Bid">
           </form>
+          {% else %}
+            {% if bids_count > 0 %}
+            <p> {{ bids_count }} bid(s) so far.</p>
+              <ul>
+              {% for bid in bids %}
+                <li>{{ bid.bidder }} : <strong>${{ bid.bid_amount }}</strong></li>  
+              {% endfor %}
+              </ul>
+            {% else %}
+            <p> No bid so far.</p>
+            {% endif %}
           {% endif %}
           <h5 class="mt-2">Details</h5>
           <ul>
-            <li>Listing by: <a href="{% url 'listing_by_seller' seller.id %}">{{ seller.username }}</a></li>
+            <li>Listing by: <a href="{% url 'listing_by_seller' listing.seller_id %}">{{ listing.seller }}</a></li>
             <li>Category: 
                 {% if category %}
                     <a href="{% url 'single_category' category.id %}">{{ category.name }}</a>
