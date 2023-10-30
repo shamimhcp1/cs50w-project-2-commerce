@@ -28,11 +28,7 @@
     {% endif %}
     {% if listing.is_closed != 0 %}
       <p class=""><span class="badge badge-warning">Listing closed</span> 
-        {% if listing.highest_biddder == request.user.usename %}
-        <span class="badge badge-success">You Won the bid!</span>
-        {% else %}
-        <span class="badge badge-success">{{ listing.highest_bidder }} </span> Won the bid.
-        {% endif %}
+        <span class="badge badge-success">{{ listing.highest_bidder.username }} </span> Won the bid.
       </p>
     {% endif %}
     <div class="card">
@@ -45,31 +41,38 @@
           <p class="card-text">{{ listing.description}}</p>
           <h3><strong>${{ listing.starting_bid}}</strong></h3>
           <!-- Show this bid form if listing is not created by the loged in user -->
-          {% if user.is_authenticated and listing.seller_id != user.id and listing.is_closed == 0 %}
-          
-            {% if bids_count %}
-            <p> {{ bids_count }} bid(s) so far, your bid is the current bid.</p>
-              {% else %}
-            <p> No bid so far, your bid is the current bid.</p>
-            {% endif %}
-          
-          <form action="" method="post">
-            {% csrf_token%}
-            <div class="form-group">
-                <input class="form-control" type="text" name="bid_amount" placeholder="Bid" required>
-            </div>
-            <input class="btn btn-primary" type="submit" value="Place Bid">
-          </form>
-          {% else %}
-            {% if bids_count > 0 %}
-            <p> {{ bids_count }} bid(s) so far.</p>
-              <ul>
-              {% for bid in bids %}
-                <li>{{ bid.bidder }} : <strong>${{ bid.bid_amount }}</strong></li>  
-              {% endfor %}
-              </ul>
+          {% if user.is_authenticated %} 
+            {% if listing.seller_id != user.id and listing.is_closed == 0 %}
+              {% if bids_count %}
+              <p> {{ bids_count }} bid(s) so far, your bid is the current bid.</p>
+                  <!-- show bid amoutn if current user has a bid on this listing -->
+                  {% for bid in bids %}
+                    {% if bid.bidder == request.user %}
+                    <p>Your bid amount: <strong>${{ bid.bid_amount }}</strong></p>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+              <p> No bid so far, your bid is the current bid.</p>
+              {% endif %}
+            
+            <form action="" method="post">
+              {% csrf_token%}
+              <div class="form-group">
+                  <input class="form-control" type="text" name="bid_amount" placeholder="Bid" required>
+              </div>
+              <input class="btn btn-primary" type="submit" value="Place Bid">
+            </form>
             {% else %}
-            <p> No bid so far.</p>
+              {% if bids_count > 0 %}
+              <p> {{ bids_count }} bid(s) so far.</p>
+                <ul>
+                {% for bid in bids %}
+                  <li>{{ bid.bidder }} : <strong>${{ bid.bid_amount }}</strong></li>  
+                {% endfor %}
+                </ul>
+              {% else %}
+              <p> No bid so far.</p>
+              {% endif %}
             {% endif %}
           {% endif %}
           
@@ -84,6 +87,28 @@
                 {% endif %}
             </li>
           </ul>
+          <!-- Display comment -->
+          <h5 class="mt-2">Comments</h5>
+          {% if comments %}
+            <ul>
+              {% for comment in comments %}
+                <li>{{ comment.comment }} | <i>{{ comment.created_date }}</i> | <strong>{{ comment.commenter.username }}</strong></li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>No comments yet.</p>
+          {% endif %}
+          <!-- add comment -->
+          {% if user.is_authenticated %}
+            <form action="{% url 'add_comment' listing.id %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                {{ comment_form.comment.errors }}
+                {{ comment_form.comment }}
+              </div>
+              <button type="submit" class="btn btn-success">Add Comment</button>
+            </form>
+          {% endif %}
         </div>
     </div>
 

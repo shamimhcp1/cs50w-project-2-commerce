@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -18,6 +19,7 @@ class Listing(models.Model):
     image_url = models.URLField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_date = models.DateTimeField(default=timezone.now)
     # store the highest bidder
     highest_bidder = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='bids')
 
@@ -47,6 +49,16 @@ class Bid(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='bids')
     bidder = models.ForeignKey(User, on_delete=models.CASCADE)
     bid_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"Bid on {self.listing.title} by {self.bidder.username}"
+
+class Comment(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='comments')
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Comment on {self.listing.title} by {self.commenter.username}, Date: {self.created_date}"

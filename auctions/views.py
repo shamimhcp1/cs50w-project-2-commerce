@@ -1,14 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required # on top of any view will ensure that only a user who is logged in can access that view.
 from django.db.models import Max
 from django.contrib import messages
+from django.utils import timezone
 
-from .models import User, Category, Listing, Bid
-
+from .models import User, Category, Listing, Bid, Comment
+from .forms import CommentForm
 
 def index(request):
     listings = Listing.objects.filter(is_closed=False)
@@ -84,9 +85,10 @@ def create_listing(request):
         
         seller = User.objects.get(pk=request.user.id)
 
-        listing = Listing(title=title, description=description, starting_bid=starting_bid, image_url=image_url, category=category, seller=seller)
+        listing = Listing(title=title, description=description, starting_bid=starting_bid, image_url=image_url, category=category, seller=seller, created_date=timezone.now())
         listing.save()
 
+        messages.success(request, "Listing created success!")
         return HttpResponseRedirect(f"listings/{listing.id}")
 
     return render(request, "auctions/create_listing.html", {
@@ -112,6 +114,7 @@ def edit_listing(request, listing_id):
         listing.category = category
         listing.save()
 
+        messages.success(request, "Listing updated success!")
         return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
     
     return render(request, "auctions/edit_listing.html", {
@@ -152,7 +155,7 @@ def single_listing(request, listing_id):
                     existing_bids.delete()
                     
                 # place new bid
-                bid = Bid(bid_amount=bid_amount, bidder=request.user, listing=listing)
+                bid = Bid(bid_amount=bid_amount, bidder=request.user, listing=listing, created_date=timezone.now())
                 bid.save()
 
                 messages.success(request, f"Success! Bid amount: {bid_amount}")
@@ -164,13 +167,16 @@ def single_listing(request, listing_id):
             messages.warning(request, "Invalid input for bid amount")
             return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
     
+    
     messages_to_display = messages.get_messages(request)  # Get messages
     return render(request, "auctions/listing.html", {
         "listing" : listing,
         "category" : category,
         "bids_count" : bids_count,
         "messages" : messages_to_display,
-        "bids" : bids
+        "bids" : bids,
+        "comments" : listing.comments.all(),
+        "comment_form" : CommentForm()
     })
 
 # listing by seller/user
@@ -254,3 +260,19 @@ def close_bid(request, listing_id):
 
     messages.success(request, f"Success! Listing closed.")
     return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
+
+# add comment
+@login_required(login_url='login')
+def add_comment(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.listing = listing
+            comment.commenter = request.user
+            comment.created_date = timezone.now()
+            comment.save()
+
+            messages.success(request, f"Success! Comment added.")
+            return redirect('single_listing', listing_id=listing_id)

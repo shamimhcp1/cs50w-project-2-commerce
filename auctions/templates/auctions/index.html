@@ -1,8 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    
-
+  
         <h2> 
             {% if my_name %}
               Listings by: <span class="badge badge-secondary">Me</span>
@@ -18,27 +17,31 @@
             {% endif %}
         </h2>
         
-        {% for listing in listings %}
-            <div class="card mb-3 m-2" style="max-width: 540px;">
-                <div class="row no-gutters">
-                  <div class="col-md-4">
-                    {% if listing.image_url %}
-                    <img class="card-img" src="{{ listing.image_url }}" alt="{{ listing.title }}">
-                    {% else %}
-                    <img class="card-img" src="https://thumb.ac-illust.com/73/7387030e5a5600726e5309496353969a_t.jpeg" alt="{{ listing.title }}">
-                    {% endif %}
-                  </div>
-                  <div class="col-md-8">
-                    <div class="card-body">
-                      <h5 class="card-title"><a href="{% url 'single_listing' listing.id %}">{{ listing.title }}</a></h5>
-                      <p class="card-text"><strong>${{ listing.starting_bid }}</strong></p>
-                      <p class="card-text">{{ listing.description}}</p>
-                      <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        {% if listings %}
+          {% for listing in listings %}
+              <div class="card mb-3 m-2" style="max-width: 540px;">
+                  <div class="row no-gutters">
+                    <div class="col-md-4">
+                      {% if listing.image_url %}
+                      <img class="card-img" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+                      {% else %}
+                      <img class="card-img" src="https://thumb.ac-illust.com/73/7387030e5a5600726e5309496353969a_t.jpeg" alt="{{ listing.title }}">
+                      {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'single_listing' listing.id %}">{{ listing.title }}</a></h5>
+                        <p class="card-text"><strong>${{ listing.starting_bid }}</strong></p>
+                        <p class="card-text">{{ listing.description}}</p>
+                        <p class="card-text"><small class="text-muted">{{ listing.created_date }}</small></p>
+                      </div>
                     </div>
                   </div>
-                </div>
-            </div>
-        {% endfor%}
+              </div>
+            {% endfor%}
+          {% else %}
+          <p>No Listings found.</p>
+        {% endif %}
 
         <!-- my bids listing -->
         {% if my_bids %}
@@ -58,7 +61,7 @@
                         <h5 class="card-title"><a href="{% url 'single_listing' bid.listing.id %}">{{ bid.listing.title }}</a></h5>
                         <p class="card-text"><strong>${{ bid.listing.starting_bid }}</strong></p>
                         <p class="card-text">{{ bid.listing.description}}</p>
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                        <p class="card-text"><small class="text-muted">{{ listing.created_date }}</small></p>
                       </div>
                     </div>
                   </div>

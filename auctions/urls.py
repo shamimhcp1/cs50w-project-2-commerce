@@ -19,6 +19,9 @@ urlpatterns = [
     path("edit_listing/<int:listing_id>", views.edit_listing, name="edit_listing"),
     path("close/<int:listing_id>", views.close_bid, name="close_bid"),
 
+    # comment
+    path("listings/<int:listing_id>/add_comment", views.add_comment, name="add_comment"),
+
     # watchlist 
     path("watchlist/<int:listing_id>", views.watchlist, name="watchlist"),
     path("watchlists", views.watchlist_show, name="watchlist_show"),
@@ -27,4 +30,5 @@ urlpatterns = [
     path("categories", views.categories, name="categories"),
     path("category/<int:category_id>", views.single_category, name="single_category"),
     path("no-category", views.no_category, name="no_category"),
+
 ]
