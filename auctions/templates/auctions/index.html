@@ -3,19 +3,18 @@
 {% block body %}
     
 
-        <h2>Active Listings
-          
+        <h2> 
             {% if my_name %}
-              by: <span class="badge badge-secondary">Me</span>
+              Listings by: <span class="badge badge-secondary">Me</span>
             {% endif %}
             {% if seller %}
-              by: <span class="badge badge-secondary">{{ seller.username }}</span>
+              Active Listings by: <span class="badge badge-secondary">{{ seller.username }}</span>
             {% endif %}
             {% if category %}
-              by: <span class="badge badge-secondary">{{ category.name }}</span>
+              Listings by: <span class="badge badge-secondary">{{ category.name }}</span>
             {% endif %}
             {% if watchlist_items %}
-              <span class="badge badge-secondary">{{ watchlist_items }}</span>
+              My <span class="badge badge-secondary">{{ watchlist_items }}</span>
             {% endif %}
         </h2>
         {% for listing in listings %}

@@ -35,8 +35,9 @@ class Listing(models.Model):
             # Mark the listing as closed
             self.is_closed = True
             # If there are bids, set the highest bidder as the winner
-            if self.bids.count() > 0:
-                self.highest_bidder = self.bids.order_by('-bid_amount').first()
+            highest_bid = self.bids.order_by('-bid_amount').first()
+            if highest_bid:
+                self.highest_bidder = highest_bid.bidder
             else:
                 # If there are no bids, set the seller as the winner
                 self.highest_bidder = self.seller

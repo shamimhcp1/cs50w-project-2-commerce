@@ -186,7 +186,7 @@ def my_listing(request):
 
 def categories(request):
     all_categories = Category.objects.all()
-    listings = Listing.objects.filter(is_closed=False)
+    listings = Listing.objects.all()
     categories = set()
     for cat in all_categories:
         for list in listings:
@@ -227,9 +227,20 @@ def watchlist(request, listing_id):
     
     return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
 
+# show list of watchlilst
+@login_required(login_url='login')
 def watchlist_show(request):
     listings = request.user.watchlist.all()
     return render(request, "auctions/index.html", {
         "listings" : listings,
         "watchlist_items" : "Watchlist Items"
     })
+
+# close bid and set highest bidder
+@login_required(login_url='login')
+def close_bid(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)  # Retrieve the listing
+    listing.close_auction()  # Manually close the auction
+
+    messages.success(request, f"Success! Listing closed.")
+    return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
