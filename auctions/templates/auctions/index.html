@@ -11,12 +11,13 @@
               Active Listings by: <span class="badge badge-secondary">{{ seller.username }}</span>
             {% endif %}
             {% if category %}
-              Listings by: <span class="badge badge-secondary">{{ category.name }}</span>
+              Active Listings by: <span class="badge badge-secondary">{{ category.name }}</span>
             {% endif %}
             {% if watchlist_items %}
               My <span class="badge badge-secondary">{{ watchlist_items }}</span>
             {% endif %}
         </h2>
+        
         {% for listing in listings %}
             <div class="card mb-3 m-2" style="max-width: 540px;">
                 <div class="row no-gutters">
@@ -38,6 +39,32 @@
                 </div>
             </div>
         {% endfor%}
+
+        <!-- my bids listing -->
+        {% if my_bids %}
+          <h2>My Bids on listing:</h2>
+          {% for bid in my_bids %}
+              <div class="card mb-3 m-2" style="max-width: 540px;">
+                  <div class="row no-gutters">
+                    <div class="col-md-4">
+                      {% if bid.listing.image_url %}
+                      <img class="card-img" src="{{ bid.listing.image_url }}" alt="{{ bid.listing.title }}">
+                      {% else %}
+                      <img class="card-img" src="https://thumb.ac-illust.com/73/7387030e5a5600726e5309496353969a_t.jpeg" alt="{{ listing.title }}">
+                      {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'single_listing' bid.listing.id %}">{{ bid.listing.title }}</a></h5>
+                        <p class="card-text"><strong>${{ bid.listing.starting_bid }}</strong></p>
+                        <p class="card-text">{{ bid.listing.description}}</p>
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          {% endfor%}
+        {% endif %}
     
 
 

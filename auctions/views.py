@@ -130,6 +130,7 @@ def single_listing(request, listing_id):
     if listing.category_id:
         category = Category.objects.get(pk=listing.category_id)
 
+    # place bid on listing
     if request.method == "POST":
         try:
             # Try converting the input to a floating-point number
@@ -145,8 +146,15 @@ def single_listing(request, listing_id):
             # The bid must be at least as large as the starting bid, and must be greater than any other bids that have been placed (if any). 
             # If the bid doesn’t meet those criteria, the user should be presented with an error.
             if bid_amount > starting_bid and bid_amount > max_bid_amount :
+                # find existing bid by the user to this listing & delete the existing bid
+                existing_bids = bids.filter(bidder=request.user) 
+                if existing_bids:
+                    existing_bids.delete()
+                    
+                # place new bid
                 bid = Bid(bid_amount=bid_amount, bidder=request.user, listing=listing)
                 bid.save()
+
                 messages.success(request, f"Success! Bid amount: {bid_amount}")
                 return HttpResponseRedirect(reverse("single_listing", args=(listing.id,)))
             else:
@@ -179,14 +187,16 @@ def listing_by_seller(request, seller_id):
 def my_listing(request):
     seller = User.objects.get(pk=request.user.id)
     listings = Listing.objects.filter(seller_id=seller.id)
+    my_bids = Bid.objects.filter(bidder=request.user)
     return render(request, "auctions/index.html", {
         "listings" : listings,
-        "my_name" : seller
+        "my_name" : seller,
+        "my_bids" : my_bids
     })
 
 def categories(request):
     all_categories = Category.objects.all()
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(is_closed=False)
     categories = set()
     for cat in all_categories:
         for list in listings:
