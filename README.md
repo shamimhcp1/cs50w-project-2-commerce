@@ -1,6 +1,10 @@
 # cs50w-project-2-commerce
 CS50W's third project : Design an eBay-like e-commerce auction site that will allow users to post auction listings, place bids on listings, comment on those listings, and add listings to a “watchlist.”
 
+![Screenshot 1 of cs50w-project-2-commerce by shamimhcp1](https://cs50.harvard.edu/web/2020/projects/2/images/listings.png)
+
+![Screenshot 2 of cs50w-project-2-commerce by shamimhcp1](https://cs50.harvard.edu/web/2020/projects/2/images/listing.png)
+
 # Getting Started
 Download the distribution code from https://cdn.cs50.net/web/2020/spring/projects/2/commerce.zip and unzip it.
 In your terminal, `cd` into the `commerce` directory.
